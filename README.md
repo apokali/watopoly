@@ -1,1 +1,1 @@
-# cs_256_watopoly
+# cs_246_watopoly
