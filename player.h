@@ -10,6 +10,8 @@ class Player {
 
     public:
     Player( std::string &name, std::string &symbol ); // constructor
+    std::string getName();
+    std::string getSymbol();
     ~Player();
 };
 
