@@ -9,9 +9,9 @@
 class Game;
 
 int main ( int argc, char *argv[] ) {
-    //std::ios::failbit
+    srand((unsigned) time(0));
     std::cin.exceptions(std::ios::eofbit);
-    //std::ifstream infile{"..."};
+    //std::ifstream intfile{"..."};
     //std::ofstream outfile{"..."};
     auto game = std::make_unique<Game>();
 
@@ -36,13 +36,12 @@ int main ( int argc, char *argv[] ) {
             while ( true ) {
                 std::cout << "Enter Number of players: ";
                 if ( !(std::cin >> numPlayer) ) {
-                    std::cerr << "Invalid number of players" << std::endl;
-                    if ( std::cin.eof() ) break;
-                    std::cin.clear();
+                    std::cerr << "Invalid: <Number>" << std::endl;
                     std::cin.ignore();
+                    std::cin.clear();
                 } else {
-                    std::cin.clear();
                     std::cin.ignore();
+                    std::cin.clear();
                     break;
                 }
             } // while
@@ -51,9 +50,9 @@ int main ( int argc, char *argv[] ) {
             int i = 1;
             while ( i <= numPlayer ) {
                 std::string line;
+                game->printPlayerOptions(std::cout);
                 while ( true ) {
-                    game->printPlayerOptions(std::cout);
-                    std::cout << "Enter Name of Player" << i << std::endl;
+                    std::cout << "Enter Player" << i << std::endl;
                     if ( !std::getline(std::cin, line) ) break;
                     std::string name, symbol;
                     std::istringstream ss{line};
@@ -62,16 +61,67 @@ int main ( int argc, char *argv[] ) {
                     if ( game->checkPlayerName(name, symbol) ) {   
                         game->addPlayer(name, symbol); break;
                     } else {
-                        std::cerr << "Invalid Player Name or Char! " << std::endl;
+                        std::cerr << "Invalid: <Name>,<Symbol> " << std::endl;
                     }
                 } //while
                 ++i; // update the player number  
             } // while
-        }// if argc<=2
+        
+        // when three arguments
+        } else if ( argc == 3 ) {
+            std::string arg1(argv[1]);
+            if ( arg1 == "-load" ) {
+                std::string arg2( argv[2] );
+                std::ifstream infile{ arg2 }; 
+                if ( infile.fail() ) {
+                    std::cerr << "Invalid: -load <filename>. Cannot read files." << std::endl;
+                    return 1;
+                } else {
+                    //game->load( infile );
+                }
+            } else {
+                std::cerr << "Invalid: -load <filename> " << std::endl;
+                return 1;
+            }
+        
+        // when 4 arguments
+        } else if ( argc == 4 ) {
+            std::string arg1(argv[1]);
+            if ( arg1 == "-load" ) {
+                std::string arg2( argv[2] );
+                std::ifstream infile{ arg2 };
+                if ( infile.fail() ) {
+                    std::cerr << "Invalid: -load <filename>. Cannot read files." << std::endl;
+                    return 1;
+                } else {
+                    //game->load( infile );
+                    std::string arg3( argv[3] );
+                    if ( arg3 != "-testing" ) {
+                        std::cerr << "Invalid: -load <filename> -testing." << std::endl;
+                        return 1;
+                    } else {
+                        game->setTestingModeOn(); // turn on tesing mode
+                    }
+                }
+            } else if (arg1 == "-testing" ) {
+                std::string arg2( argv[2] );
+                std::ifstream infile{ arg2 };
+                if ( infile.fail() ) {
+                    std::cerr << "Invalid: -load <filename>. Cannot read files." << std::endl;
+                    return 1;
+                } else {
+                    //game->load( infile );
+                }
+            } else {
+                std::cerr << "Invalid commands." << std::endl;
+                return 1;
+            }
+        }
 
         //=================== run the game ==================
+        // needs another method to decide the order of players
         game->run( std::cin, std::cout );
-        
+
     } catch (std::ios::failure) {
         std::cerr << "Quit" << std::endl;
     }
