@@ -6,8 +6,6 @@
 #include "player.h"
 #include "game.h"
 
-class Game;
-
 int main ( int argc, char *argv[] ) {
     srand((unsigned) time(0));
     std::cin.exceptions(std::ios::eofbit);
@@ -67,7 +65,7 @@ int main ( int argc, char *argv[] ) {
                 ++i; // update the player number  
             } // while
         
-        // when three arguments
+        // when 3 arguments
         } else if ( argc == 3 ) {
             std::string arg1(argv[1]);
             if ( arg1 == "-load" ) {
@@ -104,6 +102,7 @@ int main ( int argc, char *argv[] ) {
                     }
                 }
             } else if (arg1 == "-testing" ) {
+                game->setTestingModeOn(); 
                 std::string arg2( argv[2] );
                 std::ifstream infile{ arg2 };
                 if ( infile.fail() ) {
@@ -116,10 +115,13 @@ int main ( int argc, char *argv[] ) {
                 std::cerr << "Invalid commands." << std::endl;
                 return 1;
             }
+        } else {
+            std::cerr << "Invalid commands." << std::endl;
+            return 1;
         }
 
         //=================== run the game ==================
-        // needs another method to decide the order of players
+        // maybe need another method to decide the order of players
         game->run( std::cin, std::cout );
 
     } catch (std::ios::failure) {

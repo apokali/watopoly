@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player( std::string &name, std::string &symbol )
+Player::Player( const std::string &name, const std::string &symbol )
 : name{name}, symbol{symbol} { 
     balance = 1500;
     isInJail = false;
@@ -8,13 +8,13 @@ Player::Player( std::string &name, std::string &symbol )
     curPos = 0; 
 }
 
-std::string Player::getName() { return name; }
+std::string Player::getName() const { return name; }
 
-std::string Player::getSymbol() { return symbol; }
+std::string Player::getSymbol() const { return symbol; }
 
 bool Player::getIsInJail() { return isInJail; }
 
-int Player::getRoundsInJail() { return roundsInJail; }
+int Player::getRoundsInJail() const { return roundsInJail; }
 
 void Player::addRoundsInJail() {
     ++roundsInJail;
