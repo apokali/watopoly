@@ -16,15 +16,15 @@ class Player {
     
 
     public:
-    Player( std::string &name, std::string &symbol ); // constructor
+    Player( const std::string &name, const std::string &symbol ); // constructor
     bool getIsInJail();
     void goToJail();
-    int getRoundsInJail();
+    int getRoundsInJail() const;
     void addRoundsInJail();
     void exitJail();
-    std::string getName();
-    std::string getSymbol();
-    int getNumProperty();
+    std::string getName() const;
+    std::string getSymbol() const;
+    int getNumProperty() const;
     void makeMove( int dicePoint );
     ~Player();
 };

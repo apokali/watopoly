@@ -24,7 +24,7 @@ class Game {
     std::shared_ptr<Die> die_model;
     std::map<std::string, std::string> playerAvailable;
     std::vector<std::shared_ptr<Player>> players;
-    void prompt( const std::string &message, const std::string &name);
+    void prompt( const std::string &message, const std::string &name );
     void checkDouble( int &numDoubles, int &rollsAvailable, int &die1, int &die2 );
     bool roll( std::istringstream &ss, int &die1, int &die2 );
 

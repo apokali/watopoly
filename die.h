@@ -1,5 +1,5 @@
-#ifndef DICE_H
-#define DICE_H
+#ifndef DIE_H
+#define DIE_H
 #include <cstdlib>
 #include <ctime>
 #include <iostream>

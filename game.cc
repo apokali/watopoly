@@ -96,12 +96,12 @@ void Game::run( std::istream &in, std::ostream &out ) {
         for ( auto p : players ) {
             prompt( "It is your turn!", p->getName());
             std::string line;
+            // runtime parameters for a round
             int numDoubles = 0;
             int rollsAvailable = 1;
             int die1, die2;
 
             while ( true ) {
-
                 // prompting user to type in commands
                 prompt( "What you do you want to do next?", p->getName());
                 out <<"Available commands are: ";
