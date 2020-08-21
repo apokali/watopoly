@@ -4,7 +4,7 @@ Game::Game() {
     //board = std::make_unqiue<Board>();          //initialize board
     testingMode=false;
     playerNum = 0;
-    die_model = std::make_shared<Die>();
+    die_model = std::make_unique<Die>();
 
     // options of palyers available
     playerAvailable["Goose"] = "G";
@@ -41,7 +41,7 @@ bool Game::checkPlayerName( std::string &name, std::string &symbol ) {
 }
 
 void Game::addPlayer( std::string &name, std::string &symbol ) {
-    players.emplace_back(std::make_shared<Player>(name, symbol));
+    players.emplace_back(std::make_unique<Player>(name, symbol));
     playerAvailable.erase(name);        // erase the player occupied
     ++playerNum;
 }
@@ -59,7 +59,7 @@ void Game::setTestingModeOn() {
 void Game::checkDouble( int &numDoubles, int &rollsAvailable, int &die1, int &die2 ) {
     if ( die1 == die2 )  {
         ++numDoubles;
-        ++rollsAvailable;
+        ++rollsAvailable; 
     } // if doubles
 }
 
@@ -88,13 +88,40 @@ bool Game::roll( std::istringstream &ss, int &die1, int &die2 ) {
     } // if-then-else, after rolling the dice
 }
 
+
+void Game::displayCommand( const int &rollsAvailable, std::unique_ptr<Player> &p ) {
+    std::cout <<"Available commands are: ";
+    if ( rollsAvailable != 0  ) std::cout << "roll ";
+    if ( rollsAvailable == 0 || p->getIsInJail() ) std::cout << "next ";
+    if ( p->getIsInJail() && p->getRoundsInJail() != 0 ) std::cout << "usecups " << "paymoney";
+    //if ( p->getNumProperty() != 0 ) out<< "trade ";
+    // check monopoly
+    std::cout << "assets all save" << std::endl;
+}
+
+void Game::makeMove( std::unique_ptr<Player> &p, const int &numDoubles, int &rollsAvailable, int &die1, int &die2 ) {
+    if ( numDoubles == 1 && p->getIsInJail() ) {
+        rollsAvailable = 0;   // after jail, you cannot roll again
+        p->exitJail();
+        p->makeMove(die1+die2);
+        std::cout << " and you are now on: " <<std::endl;// unfinished
+    } else if ( numDoubles == 3 && !p->getIsInJail() ) {
+        rollsAvailable = 0;
+        p->goToJail();
+    } // if roll three doubles in a row
+    else {
+        p->makeMove(die1+die2);
+        std::cout << " and you are now on: " <<std::endl;// unfinished
+    }
+}
+
 void Game::run( std::istream &in, std::ostream &out ) {
     while ( true ) {
         if ( players.size() == 1 ) {
             out << players[0]->getName() << " is the winner!" << std::endl;
             break;
         }
-        for ( auto p : players ) {
+        for ( auto &p : players ) {
             prompt( "It is your turn!", p->getName());
             std::string line;
             // runtime parameters for a round
@@ -105,13 +132,7 @@ void Game::run( std::istream &in, std::ostream &out ) {
             while ( true ) {
                 // prompting user to type in commands
                 prompt( "What you do you want to do next?", p->getName());
-                out <<"Available commands are: ";
-                if ( rollsAvailable != 0  ) out << "roll ";
-                if ( rollsAvailable == 0 || p->getIsInJail() ) out << "next ";
-                if ( p->getIsInJail() && p->getRoundsInJail() != 0 ) out << "usecups " << "paymoney";
-                //if ( p->getNumProperty() != 0 ) out<< "trade ";
-                // check monopoly
-                out << "assets all save" << std::endl;
+                displayCommand( rollsAvailable, p ); // display the commands
                 
                 // reading commandlines
                 while ( !(std::getline(in, line)) ) {out << "Invalid command!" << std::endl;} // while
@@ -126,21 +147,9 @@ void Game::run( std::istream &in, std::ostream &out ) {
                     } else {
                         if ( roll( ss, die1, die2 ) ) {
                             --rollsAvailable;
-                            checkDouble( numDoubles,rollsAvailable,die1,die2 );
+                            checkDouble( numDoubles, rollsAvailable, die1, die2 );
                             out <<  p->getName() << ": You rolled " << die1 << " and "<< die2 << std::endl;
-                            if ( numDoubles == 1 && p->getIsInJail() ) {
-                                rollsAvailable = 0;   // after jail, you cannot roll again
-                                p->exitJail();
-                                p->makeMove(die1+die2);
-                                out << " and you are now on: " <<std::endl;// unfinished
-                            } else if ( numDoubles == 3 && !p->getIsInJail() ) {
-                                rollsAvailable = 0;
-                                p->goToJail();
-                            } // if roll three doubles in a row
-                            else {
-                                p->makeMove(die1+die2);
-                                out << " and you are now on: " <<std::endl;// unfinished
-                            }
+                            makeMove( p, numDoubles, rollsAvailable, die1, die2 );
                         } else {
                             std::cout << "Invalid! roll" << std::endl;
                         }
